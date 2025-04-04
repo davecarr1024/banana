@@ -1,6 +1,6 @@
 import pytest
 
-from banana.board import ACROSS, DOWN, Board, Position
+from banana.board import ACROSS, DOWN, Board, Position, Word
 
 
 def test_invalid_value():
@@ -102,12 +102,12 @@ def test_str():
 
 def test_place_word():
     board = Board()
-    board.place_word("ABC", Position(0, 0), ACROSS)
+    board.place_word(Word("ABC", Position(0, 0), ACROSS))
     assert board[Position(0, 0)] == "A"
     assert board[Position(1, 0)] == "B"
     assert board[Position(2, 0)] == "C"
 
-    board.place_word("DEF", Position(0, 0), DOWN)
+    board.place_word(Word("DEF", Position(0, 0), DOWN))
     assert board[Position(0, 0)] == "D"
     assert board[Position(0, 1)] == "E"
     assert board[Position(0, 2)] == "F"
@@ -122,8 +122,8 @@ def test_get_words():
          HKL
     """
     assert set(Board.from_str(board_str).get_words()) == {
-        "ABC",
-        "DEF",
-        "EGH",
-        "HKL",
+        Word("ABC", Position(0, 0), ACROSS),
+        Word("DEF", Position(0, 2), ACROSS),
+        Word("EGH", Position(1, 2), DOWN),
+        Word("HKL", Position(1, 4), ACROSS),
     }

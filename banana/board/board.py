@@ -3,8 +3,9 @@ from dataclasses import dataclass, field
 from itertools import dropwhile, takewhile
 from typing import Iterable, Iterator, override
 
-from banana.board.direction import ACROSS, DOWN, Direction
+from banana.board.direction import ACROSS, DOWN
 from banana.board.position import Position
+from banana.board.word import Word
 
 
 @dataclass
@@ -97,23 +98,23 @@ class Board(MutableMapping[Position, str]):
 
     def place_word(
         self,
-        word: str,
-        position: Position,
-        direction: Direction,
+        word: Word,
     ) -> None:
-        for char in word:
+        position = word.position
+        for char in word.value:
             self[position] = char
-            position += direction
+            position += word.direction
 
-    def get_words(self) -> Iterable[str]:
+    def get_words(self) -> Iterable[Word]:
         for pos, char in self.items():
             for direction in (ACROSS, DOWN):
                 if self[pos - direction] != " ":
                     continue
                 word = ""
+                position = pos
                 while char != " ":
                     word += char
                     pos += direction
                     char = self[pos]
                 if len(word) >= 2:
-                    yield word
+                    yield Word(word, position, direction)
