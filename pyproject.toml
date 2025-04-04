@@ -1,5 +1,39 @@
+[tool.poetry]
+name = "banana"
+version = "0.1.0"
+description = "na na nanana bananagrams"
+authors = ["Your Name <your.email@example.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.13"
+pytest-cov = "^4.0.0"  # Adjust the version as needed
+black = "^25.1.0"
+pytest-subtests = "^0.14.1"
+pytest = "^8.3.5"
+pyright = "^1.1.398"
+ruff = "^0.11.3"
+
 [tool.black]
 line-length = 88
+include = 'banana'
+exclude = '''
+/(
+    \.git
+  | \.mypy_cache
+  | \.venv
+  | \.local
+  | \.cache
+  | \.idea
+  | \.vscode
+  | _build
+  | build
+  | dist
+  | __pycache__
+  | .*/__pycache__
+  | .*/\.gitignore
+  | .*/\.local/share/virtualenv/.*
+)/
+'''
 
 [tool.ruff]
 line-length = 88
@@ -19,7 +53,7 @@ typeCheckingMode = "strict"
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-addopts = "-s -vv --cov=banana --cov-report=term"
+addopts = "-s --capture=no -vv --cov=banana --cov-report=term-missing"
 
 [tool.poe.tasks]
 format = "black ."
