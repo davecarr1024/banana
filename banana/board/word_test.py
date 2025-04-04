@@ -151,5 +151,10 @@ def test_overlaps() -> None:
     )
 
 
-def test_from_str()->None:
-    assert Word.from_str("AB", Position(0, 0), ACROSS) == Word([Tile('A',Position(0,0)),Tile('B',Position(1,0)),])
+def test_from_str() -> None:
+    assert Word.from_str("AB", Position(0, 0), ACROSS) == Word(
+        [
+            Tile("A", Position(0, 0)),
+            Tile("B", Position(1, 0)),
+        ]
+    )
