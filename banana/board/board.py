@@ -130,14 +130,14 @@ class Board(Set[Tile]):
         return Position(min(xs), min(ys)), Position(max(xs), max(ys))
 
     @override
-    def __str__(self)->str:
+    def __str__(self) -> str:
         min, max = self.bounds()
-        s = ''
+        s = ""
         for y in range(min.y, max.y + 1):
             for x in range(min.x, max.x + 1):
                 if tile := self.tile(Position(x, y)):
                     s += tile.value
                 else:
-                    s += ' '
-            s += '\n'
+                    s += " "
+            s += "\n"
         return s
