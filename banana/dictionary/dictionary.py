@@ -41,6 +41,9 @@ class Dictionary(Set[str]):
         return self._words_by_letter[letter.upper()]
 
     def words_that_contain_letters(self, letters: Iterable[str]) -> frozenset[str]:
+        letters = list(letters)
+        if not letters:
+            return self._words
         return frozenset[str].intersection(
             *[self.words_that_contain_letter(letter) for letter in letters]
         )

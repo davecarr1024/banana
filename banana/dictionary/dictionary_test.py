@@ -88,3 +88,8 @@ def test_words_that_contain_letters():
     assert d.words_that_contain_letters(["a", "E"]) == {
         "APPLE",
     }
+
+
+def test_words_that_contain_letters_no_input():
+    d = Dictionary(test_words)
+    assert d.words_that_contain_letters([]) == {word.upper() for word in test_words}
