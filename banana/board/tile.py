@@ -1,20 +1,20 @@
 from dataclasses import dataclass
 
 from banana.board.position import Position
+from banana.validation import ValueError, validate_letter
 
 
 @dataclass(frozen=True)
 class Tile:
-    value: str
-    position: Position
-
     class Error(Exception): ...
 
     class ValueError(Error, ValueError): ...
 
+    value: str
+    position: Position
+
     def __post_init__(self) -> None:
-        if len(self.value) != 1 or not self.value.isalpha():
-            raise self.ValueError(
-                f"Value must be a single alpha character, not {self.value!r}"
-            )
-        object.__setattr__(self, "value", self.value.upper())
+        try:
+            object.__setattr__(self, "value", validate_letter(self.value))
+        except ValueError as e:
+            raise self.ValueError(e) from e
