@@ -1,6 +1,7 @@
 import pytest
+from pytest_subtests import SubTests
 
-from banana.board import ACROSS, DOWN, Direction, Position
+from banana.board import ACROSS, DOWN, Direction, Offset, Position
 
 
 def test_invalid_values():
@@ -28,3 +29,20 @@ def test_neg():
 def test_orthogonal():
     assert ACROSS.orthogonal() == DOWN
     assert DOWN.orthogonal() == ACROSS
+
+
+def test_mul() -> None:
+    assert ACROSS * 2 == Offset(2, 0)
+
+
+def test_str(subtests: SubTests) -> None:
+    for direction, expected in list[tuple[Direction, str]](
+        [
+            (ACROSS, "ACROSS"),
+            (DOWN, "DOWN"),
+            (-ACROSS, "-ACROSS"),
+            (-DOWN, "-DOWN"),
+        ]
+    ):
+        with subtests.test(direction=direction, expected=expected):
+            assert str(direction) == expected

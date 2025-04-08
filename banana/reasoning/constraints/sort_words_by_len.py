@@ -8,5 +8,9 @@ class SortWordsByLen(Constraint):
         self.reverse = reverse
 
     @override
+    def __repr__(self) -> str:
+        return f"SortWordsByLen(reverse={self.reverse})"
+
+    @override
     def filter(self, words: Iterable[str]) -> Iterable[str]:
         return sorted(words, key=len, reverse=self.reverse)

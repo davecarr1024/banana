@@ -125,6 +125,8 @@ class Board(Set[Tile]):
         return cls(tiles)
 
     def bounds(self) -> tuple[Position, Position]:
+        if not self:
+            return Position(0, 0), Position(0, 0)
         xs = [pos.x for pos in self._tiles_by_pos.keys()]
         ys = [pos.y for pos in self._tiles_by_pos.keys()]
         return Position(min(xs), min(ys)), Position(max(xs), max(ys))

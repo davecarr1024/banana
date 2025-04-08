@@ -325,3 +325,7 @@ def test_str() -> None:
         )
         == "AB\n C\n"
     )
+
+
+def test_empty_bounds() -> None:
+    assert Board([]).bounds() == (Position(0, 0), Position(0, 0))

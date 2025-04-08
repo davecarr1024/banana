@@ -10,7 +10,9 @@ from banana.validation import validate_letter, validate_word
 
 class ConstraintGenerator(ABC):
     @abstractmethod
-    def generate(self, board: Board) -> Iterable[Constraint]: ...
+    def generate(
+        self, board: Board, letters: Iterable[str]
+    ) -> Iterable[Constraint]: ...
 
     @staticmethod
     def filter_can_build(
@@ -19,8 +21,10 @@ class ConstraintGenerator(ABC):
     ) -> Constraint:
         letter_counts = Counter(map(validate_letter, letters))
         print(f"letter_counts: {letter_counts}")
+        words = list(words)
         for word in map(validate_word, words):
             print(
+                "ConstraintGenerator.filter_can_build: "
                 f"word: {word} "
                 f"counter: {Counter(word)} "
                 f"<= letter_counts: {(Counter(word) <= letter_counts)}"

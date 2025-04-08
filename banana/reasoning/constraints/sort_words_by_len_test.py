@@ -8,3 +8,8 @@ def test_filter() -> None:
         "ab",
         "a",
     ]
+
+
+def test_repr() -> None:
+    assert repr(SortWordsByLen(reverse=True)) == "SortWordsByLen(reverse=True)"
+    assert repr(SortWordsByLen(reverse=False)) == "SortWordsByLen(reverse=False)"

@@ -10,6 +10,10 @@ class And(Constraint, Sized, Iterable[Constraint]):
         self._constraints = list(constraints)
 
     @override
+    def __repr__(self) -> str:
+        return f"And({self._constraints})"
+
+    @override
     def __len__(self) -> int:
         return len(self._constraints)
 

@@ -1,4 +1,4 @@
-from typing import Iterable
+from typing import Iterable, override
 
 from pytest_subtests import SubTests
 
@@ -11,6 +11,10 @@ class MockFilterConstraint(Constraint):
     def __init__(self, suffix: str):
         self.suffix = suffix
 
+    @override
+    def __repr__(self) -> str:
+        return f"MockFilterConstraint({self.suffix})"
+
     def filter(self, words: Iterable[str]) -> Iterable[str]:
         return (w for w in words if w.endswith(self.suffix))
 
@@ -18,6 +22,10 @@ class MockFilterConstraint(Constraint):
 class MockCandidateConstraint(Constraint):
     def __init__(self, label: str):
         self.label = label
+
+    @override
+    def __repr__(self) -> str:
+        return f"MockCandidateConstraint({self.label})"
 
     def create_candidates(self, board: Board, word: str) -> Iterable[Word]:
         return (
@@ -59,3 +67,8 @@ def test_create_candidates_merges_outputs(subtests: SubTests) -> None:
 
     assert len(candidates) == 2
     assert {w.value for w in candidates} == {"APPLE"}
+
+
+def test_repr() -> None:
+    c = And([MockFilterConstraint("A"), MockCandidateConstraint("B")])
+    assert repr(c) == "And([MockFilterConstraint(A), MockCandidateConstraint(B)])"

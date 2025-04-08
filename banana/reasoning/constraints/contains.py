@@ -15,6 +15,10 @@ class Contains(Constraint):
             raise self.ValueError("Must contain at least one letter")
 
     @override
+    def __repr__(self) -> str:
+        return f"Contains({self._letters})"
+
+    @override
     def filter(self, words: Iterable[str]) -> Iterable[str]:
         return filter(
             lambda word: all(letter in word for letter in self._letters),
