@@ -47,6 +47,12 @@ def parse_args():
         default=0,
         help="Random seed for reproducibility.",
     )
+    parser.add_argument(
+        "--max_depth",
+        type=int,
+        default=10,
+        help="Maximum depth for beam search.",
+    )
     return parser.parse_args()
 
 
@@ -91,7 +97,7 @@ def make_random_letters(n: int, words: list[str]) -> Iterable[str]:
     letters = list(counts.elements())
     random.shuffle(letters)
     letters = letters[:n]
-    print(f"letters are {(''.join(sorted(letters)))!r}")
+    print(f"random letters are {(''.join(sorted(letters)))!r}")
     return letters
 
 
@@ -124,6 +130,7 @@ def main():
         words,
         SimpleConstraintGenerator(words),
         beam_size=args.beam_size,
+        max_depth=args.max_depth,
     )
     result = search.search(board, letters)
     print("Solved board:")

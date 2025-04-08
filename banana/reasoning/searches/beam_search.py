@@ -1,3 +1,4 @@
+from collections import Counter
 from dataclasses import dataclass
 from typing import Iterable, override
 
@@ -30,6 +31,13 @@ class BeamSearch(Search):
         self.constraint_generator = constraint_generator
         self.beam_size = beam_size
         self.max_depth = max_depth
+        counts = Counter("".join(words))
+        self.letter_density = {
+            letter: count / counts.total() for letter, count in counts.items()
+        }
+        self.inverse_letter_density = {
+            letter: counts.total() / count for letter, count in counts.items()
+        }
 
     def _node(
         self,
@@ -63,7 +71,20 @@ class BeamSearch(Search):
                     yield self._node(candidate_board, list(candidate_letters))
 
     def _score(self, node: _Node) -> float:
-        return -len(node.letters)
+        words = list(node.board.get_words())
+        average_word_length = sum(map(len, words)) / len(words) if words else 0
+        letter_rarity = sum(
+            self.inverse_letter_density[letter]
+            for word in words
+            for letter in word.value
+        )
+        return (
+            -2 * len(node.letters)
+            + len(node.board)
+            + average_word_length
+            + -1 * len(node.constraints)
+            + 1.5 * letter_rarity
+        )
 
     @override
     def search(self, board: Board, letters: Iterable[str]) -> Board:
@@ -73,7 +94,7 @@ class BeamSearch(Search):
         while beam and depth <= self.max_depth:
             beam = sorted(
                 beam,
-                key=self._score,
+                key=lambda node: self._score(node),
                 reverse=True,
             )[: self.beam_size]
             print(f"beam search depth {depth} beam size {len(beam)}")

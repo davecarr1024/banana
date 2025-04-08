@@ -13,7 +13,8 @@ class InSet(Constraint):
 
     @override
     def filter(self, words: Iterable[str]) -> Iterable[str]:
-        return filter(
-            self._words.__contains__,
-            words,
-        )
+        return self._words
+        # return filter(
+        #     self._words.__contains__,
+        #     words,
+        # )
