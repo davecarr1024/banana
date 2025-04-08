@@ -14,4 +14,4 @@ class InSet(Constraint):
 
     @override
     def filter(self, words: Iterable[str]) -> Iterable[str]:
-        return filter(self._words.__contains__, map(validate_word, words))
+        return self._words

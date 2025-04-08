@@ -16,6 +16,9 @@ class Board(Set[Tile]):
     def __init__(self, tiles: Iterable[Tile]) -> None:
         self._tiles = frozenset(tiles)
 
+    def copy(self) -> "Board":
+        return Board(self._tiles)
+
     @override
     def __eq__(self, other: object) -> bool:
         return isinstance(other, Board) and self._tiles == other._tiles
@@ -96,7 +99,12 @@ class Board(Set[Tile]):
                     yield Word(tiles)
 
     @classmethod
-    def from_str(cls, board_str: str) -> "Board":
+    def from_str(
+        cls,
+        board_str: str,
+        /,
+        starting_pos: Optional[Position] = None,
+    ) -> "Board":
         def trim_empty_lines(lines: list[str]) -> list[str]:
             def is_empty(line: str) -> bool:
                 return not line.strip()
@@ -116,8 +124,11 @@ class Board(Set[Tile]):
         lines = trim_empty_lines(lines)
         lines = trim_leading_whitespace(lines)
 
+        starting_x = starting_pos.x if starting_pos else 0
+        starting_y = starting_pos.y if starting_pos else 0
+
         tiles = [
-            Tile(value, Position(x, y))
+            Tile(value, Position(x + starting_x, y + starting_y))
             for y, line in enumerate(lines)
             for x, value in enumerate(line)
             if not value.isspace()
@@ -143,3 +154,6 @@ class Board(Set[Tile]):
                     s += " "
             s += "\n"
         return s
+
+    def get_letters_consumed(self, word: Word) -> list[str]:
+        return [tile.value for tile in word if self.tile(tile.position) is None]

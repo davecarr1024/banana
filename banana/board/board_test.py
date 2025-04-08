@@ -256,6 +256,24 @@ def test_from_str():
     assert Board.from_str(str(board)) == board
 
 
+def test_from_str_with_starting_pos() -> None:
+    board_str = """
+        ABC
+        D E
+         
+         F
+     """
+    board = Board.from_str(board_str, starting_pos=Position(1, 1))
+    assert set(board) == {
+        Tile("A", Position(1, 1)),
+        Tile("B", Position(2, 1)),
+        Tile("C", Position(3, 1)),
+        Tile("D", Position(1, 2)),
+        Tile("E", Position(3, 2)),
+        Tile("F", Position(2, 4)),
+    }
+
+
 def test_get_words():
     board_str = """
         ABC
@@ -329,3 +347,20 @@ def test_str() -> None:
 
 def test_empty_bounds() -> None:
     assert Board([]).bounds() == (Position(0, 0), Position(0, 0))
+
+
+def test_copy() -> None:
+    board = Board([Tile("A", Position(0, 0))])
+    copy = board.copy()
+    assert board == copy
+    assert board is not copy
+    copy.add_tile(Tile("B", Position(1, 0)))
+    assert board != copy
+    assert board == Board([Tile("A", Position(0, 0))])
+    assert copy == Board([Tile("A", Position(0, 0)), Tile("B", Position(1, 0))])
+
+
+def test_letters_consumed() -> None:
+    board = Board([Tile("A", Position(0, 0))])
+    word = Word([Tile("A", Position(0, 0)), Tile("B", Position(1, 0))])
+    assert board.get_letters_consumed(word) == ["B"]
