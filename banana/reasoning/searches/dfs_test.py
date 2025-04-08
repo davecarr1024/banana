@@ -9,7 +9,7 @@ def test_search_empty_board() -> None:
     board = Board([])
     letters = "CAB"
     words = ["CAB"]
-    search = DFS(SimpleConstraintGenerator(words))
+    search = DFS(words, SimpleConstraintGenerator(words))
 
     result = search.search(board, letters)
     expected = Board.from_str("CAB")
@@ -22,7 +22,7 @@ def test_search_simple_anchor() -> None:
     board = Board.from_str("CAB")
     letters = "AD"
     words = ["BAD", "DAD", "CAB"]
-    search = DFS(SimpleConstraintGenerator(words))
+    search = DFS(words, SimpleConstraintGenerator(words))
 
     result = search.search(board, letters)
 
@@ -42,7 +42,7 @@ def test_search_fails_gracefully() -> None:
     board = Board.from_str("CAB")
     letters = "XYZ"
     words = ["CAB", "BAD"]
-    search = DFS(SimpleConstraintGenerator(words))
+    search = DFS(words, SimpleConstraintGenerator(words))
 
     with pytest.raises(DFS.SearchError):
         search.search(board, letters)
@@ -52,7 +52,7 @@ def test_search_attaches_midword() -> None:
     board = Board.from_str("ABC")
     letters = "DE"
     words = ["ABC", "DBE"]
-    search = DFS(SimpleConstraintGenerator(words))
+    search = DFS(words, SimpleConstraintGenerator(words))
 
     result = search.search(board, letters)
 

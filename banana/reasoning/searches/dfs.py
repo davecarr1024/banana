@@ -12,14 +12,22 @@ class DFS(Search):
 
     class SearchError(Error, RuntimeError): ...
 
-    def __init__(self, constraint_generator: ConstraintGenerator) -> None:
+    def __init__(
+        self,
+        words: Iterable[str],
+        constraint_generator: ConstraintGenerator,
+    ) -> None:
+        super().__init__(words)
         self.constraint_generator = constraint_generator
 
-    def _search(self, board: Board, letters: Iterable[str]) -> Optional[Board]:
+    def _search(self, board: Board, letters: list[str]) -> Optional[Board]:
         def letters_without_candidate(candidate: Word) -> Iterable[str]:
             letters_consumed = board.get_letters_consumed(candidate)
             new_counter = Counter(letters) - Counter(letters_consumed)
             return new_counter.elements()
+
+        if not self._board_is_valid(board):
+            return None
 
         if not letters:
             return board
@@ -32,7 +40,8 @@ class DFS(Search):
                     candidate_board.place_word(candidate)
                     candidate_letters = letters_without_candidate(candidate)
                     candidate_solution = self._search(
-                        candidate_board, candidate_letters
+                        candidate_board,
+                        list(candidate_letters),
                     )
                     if candidate_solution is not None:
                         return candidate_solution
