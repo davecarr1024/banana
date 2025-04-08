@@ -1,10 +1,10 @@
+from functools import cache
 from typing import Iterable, override
 
 from banana.board import Board, Direction, Position, Word
 from banana.reasoning.constraint import Constraint
 from banana.reasoning.constraint_generator import ConstraintGenerator
 from banana.reasoning.constraints import And, Contains, Start
-from banana.validation import validate_letter, validate_word
 
 
 class _Anchor(Constraint):
@@ -28,16 +28,24 @@ class _Anchor(Constraint):
 
 class SimpleConstraintGenerator(ConstraintGenerator):
     def __init__(self, words: Iterable[str]) -> None:
-        self.words = frozenset(map(validate_word, words))
+        self.words = frozenset(words)
 
     @override
     def __repr__(self) -> str:
         return f"SimpleConstraintGenerator({self.words})"
 
+    @cache
+    @staticmethod
+    def _filter_can_build(
+        words: frozenset[str],
+        letters: tuple[str, ...],
+    ) -> Constraint:
+        return ConstraintGenerator.filter_can_build(words, letters)
+
     @override
     def generate(self, board: Board, letters: Iterable[str]) -> Iterable[Constraint]:
-        letters = list(map(validate_letter, letters))
-        can_build_filter = self.filter_can_build(
+        letters = tuple(letters)
+        can_build_filter = SimpleConstraintGenerator._filter_can_build(
             self.words,
             letters,
         )
@@ -58,7 +66,10 @@ class SimpleConstraintGenerator(ConstraintGenerator):
                         continue
                     yield And(
                         [
-                            self.filter_can_build(self.words, letters + [tile.value]),
+                            SimpleConstraintGenerator._filter_can_build(
+                                self.words,
+                                letters + (tile.value,),
+                            ),
                             Contains([tile.value]),
                             _Anchor(tile.position, direction),
                         ]

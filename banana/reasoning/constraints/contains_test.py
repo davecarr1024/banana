@@ -9,5 +9,5 @@ def test_invalid_letters() -> None:
 
 
 def test_filter() -> None:
-    assert list(Contains(["a"]).filter(["abc", "def"])) == ["ABC"]
-    assert list(Contains(["a", "b"]).filter(["abc", "adef", "bdef", "def"])) == ["ABC"]
+    assert list(Contains(["A"]).filter(["ABC", "DEF"])) == ["ABC"]
+    assert list(Contains(["A", "B"]).filter(["ABC", "ADEF", "BDEF", "DEF"])) == ["ABC"]

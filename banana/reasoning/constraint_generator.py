@@ -5,7 +5,6 @@ from typing import Iterable
 from banana.board import Board
 from banana.reasoning.constraint import Constraint
 from banana.reasoning.constraints import InSet
-from banana.validation import validate_letter, validate_word
 
 
 class ConstraintGenerator(ABC):
@@ -19,10 +18,10 @@ class ConstraintGenerator(ABC):
         words: Iterable[str],
         letters: Iterable[str],
     ) -> Constraint:
-        letter_counts = Counter(map(validate_letter, letters))
+        letter_counts = Counter(letters)
         return InSet(
             filter(
                 lambda word: Counter(word) <= letter_counts,
-                map(validate_word, words),
+                words,
             )
         )

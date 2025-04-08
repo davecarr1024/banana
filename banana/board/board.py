@@ -15,6 +15,7 @@ class Board(Set[Tile]):
 
     def __init__(self, tiles: Iterable[Tile]) -> None:
         self._tiles = frozenset(tiles)
+        self._words: Optional[list[Word]] = None
 
     def copy(self) -> "Board":
         return Board(self._tiles)
@@ -83,7 +84,7 @@ class Board(Set[Tile]):
         for tile in word:
             self.add_tile(tile)
 
-    def get_words(self) -> Iterable[Word]:
+    def _get_words(self) -> Iterable[Word]:
         for start_tile in self:
             for direction in ACROSS, DOWN:
                 if self.tile(start_tile.position - direction):
@@ -97,6 +98,11 @@ class Board(Set[Tile]):
                     tile = self.tile(position)
                 if len(tiles) >= 2:
                     yield Word(tiles)
+
+    def get_words(self) -> Iterable[Word]:
+        if self._words is None:
+            self._words = list(self._get_words())
+        return self._words
 
     @classmethod
     def from_str(
