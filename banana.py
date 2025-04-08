@@ -1,4 +1,7 @@
 import argparse
+import random
+from collections import Counter
+from typing import Iterable
 
 from banana.board import Board
 from banana.reasoning.generators import SimpleConstraintGenerator
@@ -17,8 +20,14 @@ def parse_args():
     parser.add_argument(
         "--letters",
         type=str,
-        required=True,
+        default="",
         help="String of available letters (e.g., 'ABCDEF').",
+    )
+    parser.add_argument(
+        '--random_letters',
+        type=int,
+        default=0,
+        help='Number of random letters to generate (e.g., 7).'
     )
     parser.add_argument(
         "--start",
@@ -29,11 +38,25 @@ def parse_args():
     return parser.parse_args()
 
 
+def make_random_letters(n:int, words:list[str])->Iterable[str]:
+    counts = Counter(''.join(words))
+    letters = random.choices(list(counts.keys()), weights=list(counts.values()), k=n,)
+    print(f'letters are {(''.join(sorted(letters)))!r}')
+    return letters
+
+def make_letters(args, words:Iterable[str])->list[str]:
+    if args.random_letters:
+        return make_random_letters(args.random_letters, words)
+    elif args.letters:
+        return args.letters.strip().upper()
+    else:
+        raise ValueError("Either --letters or --random_letters must be specified.")
+
 def main():
     args = parse_args()
 
     words = [validate_word(line.strip()) for line in args.words if line.strip()]
-    letters = args.letters.strip().upper()
+    letters = make_letters(args, words)
 
     board = Board.from_str(args.start) if args.start else Board([])
 
