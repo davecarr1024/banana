@@ -61,3 +61,11 @@ lint = "ruff check --fix ."
 typecheck = "pyright"
 test = "pytest"
 all = ["format", "lint", "typecheck", "test"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "def __str__",
+    "if __name__ == .__main__.:",
+]

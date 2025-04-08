@@ -12,11 +12,8 @@ def _filter_words(
     words: Iterable[str],
 ) -> Iterable[str]:
     words = list(words)
-    print(f"_filter_words(board={board}, cg={cg}, letters={letters}, words={words})")
     constraints = list(cg.generate(board, letters))
-    print(f"constraints={constraints}")
     for constraint in constraints:
-        print(f"constraint={constraint}")
         yield from constraint.filter(words)
 
 
@@ -28,15 +25,10 @@ def _generate_candidates(
 ) -> Iterable[Word]:
     letters = list(letters)
     words = list(words)
-    print(f"_generate_candidates(board={board}, letters={letters}, cg={cg})")
     constraints = list(cg.generate(board, letters))
-    print(f"constraints={constraints}")
     for constraint in constraints:
-        print(f"testing constraint={constraint}")
         filtered_words = list(constraint.filter(words))
-        print(f"testing filtered words={filtered_words}")
         for word in filtered_words:
-            print(f"testing filtered word={word}")
             yield from constraint.create_candidates(board, word)
 
 
@@ -53,7 +45,7 @@ def test_start() -> None:
 
 def test_anchor() -> None:
     board = Board.from_str("ABC")
-    letters = "CDE"
+    letters = "DE"
     words = ["ABC", "CDE", "CDF"]
     cg = SimpleConstraintGenerator(words)
     assert list(_filter_words(board, cg, letters, words)) == ["CDE"]
@@ -70,7 +62,7 @@ def test_anchor_avoids_intersection() -> None:
           C
     """
     )
-    letters = "CEF"
+    letters = "EF"
     words = ["ABC", "CDC", "CEF", "CEG"]
     cg = SimpleConstraintGenerator(words)
     assert set(_filter_words(board, cg, letters, words)) == {"CEF"}
@@ -81,7 +73,7 @@ def test_anchor_avoids_intersection() -> None:
 
 def test_anchor_attaches_inside_new_word() -> None:
     board = Board.from_str("ABC")
-    letters = "EBF"
+    letters = "EF"
     words = ["ABC", "EBF", "EBG"]
     cg = SimpleConstraintGenerator(words)
     assert list(_filter_words(board, cg, letters, words)) == ["EBF"]
@@ -92,7 +84,7 @@ def test_anchor_attaches_inside_new_word() -> None:
 
 def test_anchor_attaches_at_end_of_new_word() -> None:
     board = Board.from_str("ABC")
-    letters = "EFB"
+    letters = "EF"
     words = ["ABC", "EFB", "EGB"]
     cg = SimpleConstraintGenerator(words)
     assert list(_filter_words(board, cg, letters, words)) == ["EFB"]

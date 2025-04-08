@@ -20,15 +20,6 @@ class ConstraintGenerator(ABC):
         letters: Iterable[str],
     ) -> Constraint:
         letter_counts = Counter(map(validate_letter, letters))
-        print(f"letter_counts: {letter_counts}")
-        words = list(words)
-        for word in map(validate_word, words):
-            print(
-                "ConstraintGenerator.filter_can_build: "
-                f"word: {word} "
-                f"counter: {Counter(word)} "
-                f"<= letter_counts: {(Counter(word) <= letter_counts)}"
-            )
         return InSet(
             filter(
                 lambda word: Counter(word) <= letter_counts,

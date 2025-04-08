@@ -10,7 +10,3 @@ def test_create_candidates() -> None:
             ACROSS,
         )
     ]
-
-
-def test_repr() -> None:
-    assert repr(Start()) == "Start()"

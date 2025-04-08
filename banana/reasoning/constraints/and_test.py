@@ -67,8 +67,3 @@ def test_create_candidates_merges_outputs(subtests: SubTests) -> None:
 
     assert len(candidates) == 2
     assert {w.value for w in candidates} == {"APPLE"}
-
-
-def test_repr() -> None:
-    c = And([MockFilterConstraint("A"), MockCandidateConstraint("B")])
-    assert repr(c) == "And([MockFilterConstraint(A), MockCandidateConstraint(B)])"

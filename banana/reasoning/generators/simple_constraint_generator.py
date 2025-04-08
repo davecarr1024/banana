@@ -36,9 +36,10 @@ class SimpleConstraintGenerator(ConstraintGenerator):
 
     @override
     def generate(self, board: Board, letters: Iterable[str]) -> Iterable[Constraint]:
+        letters = list(map(validate_letter, letters))
         can_build_filter = self.filter_can_build(
             self.words,
-            map(validate_letter, letters),
+            letters,
         )
         if len(board) == 0:
             yield And(
@@ -51,19 +52,13 @@ class SimpleConstraintGenerator(ConstraintGenerator):
             for word in board.get_words():
                 direction = word.direction.orthogonal()
                 for tile in word:
-                    print(
-                        f"generating constraints for tile {tile} in word {word}"
-                        f" in direction {direction}"
-                    )
                     if board.tile(tile.position + direction) is not None:
-                        print(f"tile {tile} has a tile to the right")
                         continue
                     if board.tile(tile.position - direction) is not None:
-                        print(f"tile {tile} has a tile to the left")
                         continue
                     yield And(
                         [
-                            can_build_filter,
+                            self.filter_can_build(self.words, letters + [tile.value]),
                             Contains([tile.value]),
                             _Anchor(tile.position, direction),
                         ]
