@@ -1,6 +1,10 @@
+from typing import Iterable, override
+
 import pytest
 
 from banana.board import Board, Position
+from banana.reasoning import Constraint, ConstraintGenerator
+from banana.reasoning.constraints import Start
 from banana.reasoning.generators import SimpleConstraintGenerator
 from banana.reasoning.searches.dfs import DFS
 
@@ -66,3 +70,39 @@ def test_search_attaches_midword() -> None:
     )
 
     assert result == expected
+
+
+class OnlyStarts(ConstraintGenerator):
+    @override
+    def generate(self, board: Board, letters: Iterable[str]) -> Iterable[Constraint]:
+        yield Start()
+
+
+def test_unplaceable_word() -> None:
+    # Can't place a B on top of an A
+    board = Board.from_str("A")
+    letters = "BC"
+    words = ["BC"]
+    search = DFS(words, OnlyStarts())
+    with pytest.raises(DFS.SearchError):
+        search.search(board, letters)
+
+
+def test_non_unique_word() -> None:
+    # Can't duplicate an existing word
+    board = Board.from_str("AB")
+    letters = "AB"
+    words = ["AB"]
+    search = DFS(words, OnlyStarts())
+    with pytest.raises(DFS.SearchError):
+        search.search(board, letters)
+
+
+def test_invalid_board() -> None:
+    # Can't generate a board with a word not in the word list
+    board = Board.from_str("AB", starting_pos=Position(0, 1))
+    letters = "AB"
+    words = ["AB"]
+    search = DFS(words, OnlyStarts())
+    with pytest.raises(DFS.SearchError):
+        search.search(board, letters)

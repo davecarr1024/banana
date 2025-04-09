@@ -45,13 +45,13 @@ def parse_args():
         "--random_seed",
         type=int,
         default=0,
-        help="Random seed for reproducibility.",
+        help="Random seed for reproducibility. 0 to disable.",
     )
     parser.add_argument(
         "--max_depth",
         type=int,
-        default=10,
-        help="Maximum depth for beam search.",
+        default=0,
+        help="Maximum depth for beam search. 0 to disable.",
     )
     return parser.parse_args()
 
@@ -132,9 +132,12 @@ def main():
         beam_size=args.beam_size,
         max_depth=args.max_depth,
     )
-    result = search.search(board, letters)
-    print("Solved board:")
-    print(result)
+    try:
+        result = search.search(board, letters)
+        print("Solved board:")
+        print(result)
+    except BeamSearch.SearchError as e:
+        print(f"No solution found: {e}")
 
 
 if __name__ == "__main__":
