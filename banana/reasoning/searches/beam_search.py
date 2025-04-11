@@ -26,6 +26,21 @@ class BeamSearch(Search):
         constraint_generator: ConstraintGenerator,
         beam_size: int = 100,
         max_depth: int = 0,
+        # Heuristic weight for the number of remaining letters.
+        # Negative values encourage using more letters.
+        remaining_letters_weight: float = -2,
+        # Heuristic weight for the size of the board.
+        # Positive values encourage larger boards.
+        board_size_weight: float = 1,
+        # Heuristic weight for the average word length.
+        # Positive values encourage longer words.
+        average_word_length_weight: float = 1,
+        # Heuristic weight for the number of constraints.
+        # Negative values encourage more constrained search path (like MCV).
+        constraints_weight: float = -1,
+        # Heuristic weight for the rarity of letters.
+        # Positive values encourage using rarer letters.
+        letter_rarity_weight: float = 1.5,
     ) -> None:
         super().__init__(words)
         self.constraint_generator = constraint_generator
@@ -36,8 +51,26 @@ class BeamSearch(Search):
             letter: count / counts.total() for letter, count in counts.items()
         }
         self.inverse_letter_density = {
-            letter: counts.total() / count for letter, count in counts.items()
+            letter: 1 - (count / counts.total()) for letter, count in counts.items()
         }
+        self.remaining_letters_weight = remaining_letters_weight
+        self.board_size_weight = board_size_weight
+        self.average_word_length_weight = average_word_length_weight
+        self.constraints_weight = constraints_weight
+        self.letter_rarity_weight = letter_rarity_weight
+
+    @override
+    def __str__(self) -> str:
+        return (
+            f"BeamSearch\n"
+            f"  beam_size={self.beam_size}\n"
+            f"  max_depth={self.max_depth}\n"
+            f"  remaining_letters_weight={self.remaining_letters_weight}\n"
+            f"  board_size_weight={self.board_size_weight}\n"
+            f"  average_word_length_weight={self.average_word_length_weight}\n"
+            f"  constraints_weight={self.constraints_weight}\n"
+            f"  letter_rarity_weight={self.letter_rarity_weight}\n"
+        )
 
     def _node(
         self,
@@ -57,12 +90,6 @@ class BeamSearch(Search):
                     node.board,
                     word,
                 ):
-                    print(
-                        f"expand: node={node} "
-                        f"constraint={constraint} "
-                        f"word={word} "
-                        f"candidate={candidate}"
-                    )
                     if not node.board.can_place_word(candidate):
                         continue
                     candidate_board = node.board.copy()
@@ -81,17 +108,22 @@ class BeamSearch(Search):
     def _score(self, node: _Node) -> float:
         words = list(node.board.get_words())
         average_word_length = sum(map(len, words)) / len(words) if words else 0
-        letter_rarity = sum(
-            self.inverse_letter_density[letter]
-            for word in words
-            for letter in word.value
+        letters = [tile.value for tile in node.board]
+        average_letter_rarity = (
+            sum(self.inverse_letter_density.get(letter, 0) for letter in letters)
+            / len(letters)
+            if letters
+            else 0
         )
+        min_pos, max_pos = node.board.bounds()
+        board_area = (max_pos.x - min_pos.x + 1) * (max_pos.y - min_pos.y + 1)
+        board_density = len(node.board) / board_area
         return (
-            -2 * len(node.letters)
-            + len(node.board)
-            + average_word_length
-            + -1 * len(node.constraints)
-            + 1.5 * letter_rarity
+            self.remaining_letters_weight * len(node.letters)
+            + self.board_size_weight * board_density
+            + self.average_word_length_weight * average_word_length
+            + self.constraints_weight * len(node.constraints)
+            + self.letter_rarity_weight * average_letter_rarity
         )
 
     @override

@@ -1,7 +1,6 @@
 import argparse
 import random
 from collections import Counter
-from typing import Iterable
 
 from banana.board import Board
 from banana.reasoning.generators import SimpleConstraintGenerator
@@ -56,7 +55,7 @@ def parse_args():
     return parser.parse_args()
 
 
-def make_random_letters(n: int, words: list[str]) -> Iterable[str]:
+def make_random_letters(n: int, words: list[str]) -> list[str]:
     # counts = Counter("".join(words))
     # print(f"raw letter counts are {sorted(dict(counts).items())}")
     counts = Counter(
@@ -96,12 +95,12 @@ def make_random_letters(n: int, words: list[str]) -> Iterable[str]:
     # )
     letters = list(counts.elements())
     random.shuffle(letters)
-    letters = letters[:n]
+    letters = list(letters[:n])
     print(f"random letters are {(''.join(sorted(letters)))!r}")
     return letters
 
 
-def make_letters(args, words: Iterable[str]) -> list[str]:
+def make_letters(args: argparse.Namespace, words: list[str]) -> list[str]:
     if args.random_letters:
         return make_random_letters(args.random_letters, words)
     elif args.letters:
